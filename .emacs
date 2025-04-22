@@ -21,12 +21,14 @@
 (tool-bar-mode 0)
 (scroll-bar-mode 0)
 (global-font-lock-mode t)
-
+(global-auto-revert-mode 1)
 
 (ido-mode 1)
 (ido-everywhere 1)
 (setq display-line-numbers-type 'relative)
 (global-display-line-numbers-mode t)
+(set-face-attribute 'tab-bar-tab-inactive nil :background 'unspecified)
+
 
 (unless (package-installed-p 'company)
   (package-refresh-contents)
@@ -44,6 +46,8 @@
 
 (package-initialize)
 
+
+
 (unless package-archive-contents
   (package-refresh-contents))
 
@@ -53,9 +57,9 @@
 (setq use-package-always-ensure t)
 
 ;; Vertico
-;;(use-package vertico
-;;  :init
-;;  (vertico-mode))
+(use-package vertico
+  :init
+  (vertico-mode))
 
 ;; Orderless
 (use-package orderless
@@ -67,7 +71,7 @@
 ;; Consult
 (use-package consult
   :bind
-  (;;("C-s" . consult-line)
+  (("C-s" . consult-line)
    ("C-x b" . consult-buffer)
    ("M-y" . consult-yank-pop)
    ("C-x C-r" . consult-recent-file)))
@@ -92,20 +96,26 @@
 (setq inhibit-startup-screen t)
 
 ;; MATLAB Path
-(setq matlab-shell-command "/Applications/MATLAB_R2024a.app/bin/matlab")
-;; MATLAB autocomplete
-(add-hook 'matlab-mode-hook 'company-mode)
-;; MATLAB autoload
-;; (autoload 'matlab-mode "matlab" "Enter Matlab mode." t)
-;; (add-to-list 'auto-mode-alist '("\.m\'" . matlab-mode))
+(setq matlab-shell-command "/usr/local/MATLAB/R2024b/bin/matlab"
+      matlab-shell-command-switches '("-nodesktop" "-nosplash"))
 
+(use-package matlab-mode
+  :ensure t
+  :mode ("\\.m\\'" . matlab-mode)
+  :config
+  (setq matlab-shell-command "/usr/local/MATLAB/R2024b/bin/matlab"))
+
+
+;; Indentation and Autocomplete
 (setq matlab-indent-function t)
-(autoload 'matlab-shell "matlab" "Interactive MATLAB shell mode." t)
+(add-hook 'matlab-mode-hook 'company-mode)
+(add-hook 'matlab-mode-hook 'eldoc-mode)
 
+;; Company settings
 (with-eval-after-load 'company
   (setq company-idle-delay 0.2
-    company-minimum-prefix-length 2
-    company-tooltip-align-annotation t))
+        company-minimum-prefix-length 2
+        company-tooltip-align-annotation t))
 
 ;; Lua Stuff
 (require 'auto-complete-lua)(add-hook 'lua-mode-hook
