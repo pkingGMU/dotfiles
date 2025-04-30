@@ -7,6 +7,9 @@
 (load-theme 'gruber-darker t)
 
 
+;; Default Dir
+(setq default-directory "/mnt/code/code/git/")
+
 ;; Keybinds
 
 
@@ -28,6 +31,9 @@
 (setq display-line-numbers-type 'relative)
 (global-display-line-numbers-mode t)
 (set-face-attribute 'tab-bar-tab-inactive nil :background 'unspecified)
+
+;; I Don't care about snippets
+(setq lsp-enable-snippet nil)
 
 
 (unless (package-installed-p 'company)
@@ -117,7 +123,83 @@
         company-minimum-prefix-length 2
         company-tooltip-align-annotation t))
 
+;; React Stuff
+
+(use-package rjsx-mode
+  :ensure t
+  :mode ("\\.jsx\\'" . rjsx-mode)
+  :mode ("\\.tsx\\'" . rjsx-mode))
+
+(use-package emmet-mode
+  :ensure t
+  :hook ((html-mode . emmet-mode)
+         (rjsx-mode . emmet-mode)))
+
+(global-set-key (kbd "C-c r") 'react-run-server)
+(global-set-key (kbd "C-c b") 'react-build)
+
+;; Install useful packages
+(use-package rjsx-mode
+  :ensure t
+  :mode ("\\.jsx\\'" . rjsx-mode)
+  :mode ("\\.tsx\\'" . rjsx-mode))
+
+(use-package company
+  :ensure t
+  :config
+  (add-hook 'after-init-hook 'global-company-mode))
+
+(use-package prettier
+  :ensure t
+  :hook ((js2-mode typescript-mode) . prettier-mode)
+  :config
+  (setq prettier-js-args '("--single-quote" "--trailing-comma" "es5")))
+
+(use-package emmet-mode
+  :ensure t
+  :hook ((html-mode . emmet-mode)
+         (rjsx-mode . emmet-mode)))
+
+(use-package projectile
+  :ensure t
+  :config
+  (projectile-mode +1))
+
+(use-package lsp-mode
+  :ensure t
+  :hook (lsp-mode . lsp-ui-mode))
+
+(use-package lsp-tailwindcss
+  :ensure t
+  :after lsp-mode)
+
+
+;; Dap Debug
+
+(require 'dap-mode)
+
+;; 1. Register an adapter for Love2D
+(dap-register-debug-provider "love"
+  (lambda (conf) conf))
+
+(dap-register-debug-template "Love2D Run Project"
+  (list :type "love"  ;; <- must match adapter name
+        :request "launch"
+        :name "Launch Love2D"
+        :program "love"
+        :args (vector ".")
+        :cwd (expand-file-name ".")
+        :console "integratedTerminal"))
+
+(use-package lua-mode
+  :ensure t)
+
 ;; Lua Stuff
+
+
+
+;; Supress
+(setq native-comp-async-report-warnings-errors nil)
 (require 'auto-complete-lua)(add-hook 'lua-mode-hook
 				      '(lambda () (setq ac-sources'(ac-source-lua)) (auto-complete-mode 1)))
 
