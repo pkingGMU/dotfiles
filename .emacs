@@ -282,3 +282,7 @@
 
 
 
+;; C# Development ;;;;;;;;
+
+;; Eglot
+(setq eglot-report-progress nil)
