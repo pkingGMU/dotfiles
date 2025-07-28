@@ -286,3 +286,18 @@
 
 ;; Eglot
 (setq eglot-report-progress nil)
+
+
+;; Remove non-breaking spaces ;;
+(defun replace-nbsp ()
+  (save-excursion
+    (goto-char (point-min))
+    (while (search-forward "\u00A0" nil t)
+      (replace-match " " nil t))))
+
+(add-hook 'before-save-hook 'replace-nbsp)
+
+(setq default-input-method "english")
+
+(setq-default indent-tabs-mode nil)
+(setq-default tab-width 4)
